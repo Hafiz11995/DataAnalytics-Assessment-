@@ -9,6 +9,7 @@ WITH customer_monthly_stats AS (
     SELECT 
         s.owner_id,
         COUNT(s.id) AS transaction_count,
+      -- Distinct months with transactions (active months)
         COUNT(DISTINCT DATE_FORMAT(s.transaction_date, '%Y-%m')) AS active_months
     FROM savings_savingsaccount AS s
     WHERE s.transaction_status = 'success'
