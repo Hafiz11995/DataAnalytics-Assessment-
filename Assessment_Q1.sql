@@ -12,8 +12,7 @@ SELECT u.id AS owner_id,
      -- Count distinct investment plans (is_a_fund = 1)
     SUM(CASE WHEN s.transaction_status = 'success' THEN s.confirmed_amount ELSE 0 END) / 100 AS total_deposits
     -- Sum all successful confirmed amounts (converting from kobo to currency by dividing by 100)
-FROM 
-    users_customuser AS u
+FROM users_customuser AS u
 INNER JOIN plans_plan AS p ON u.id = p.owner_id
 -- Only join successful transactions to ensure we're counting funded plans
 LEFT JOIN savings_savingsaccount AS s ON p.id = s.plan_id
