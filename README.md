@@ -1,7 +1,7 @@
 # DataAnalytics-Assessment
 
 ## Overview
-This repository contains my solutions to the SQL assessment questions, ahowing my proficiency in data retrieval, aggregation, joins, and analysis across multiple tables using MySQL application.
+This repository contains my solutions to the SQL assessment questions, showing my proficiency in data retrieval, aggregation, joins, and analysis across multiple tables using MySQL application.
 
 ## Question Explanations
 
