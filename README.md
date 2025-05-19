@@ -1,77 +1,86 @@
 # DataAnalytics-Assessment
 
 ## Overview
-This repository contains my solutions to the SQL assessment questions, showing my proficiency in data retrieval, aggregation, joins, and analysis across multiple tables using MySQL application.
+This repository showcases my solutions to a series of SQL assessment questions. Each solution demonstrates my ability to analyze and transform data using MySQL, focusing on data aggregation, joins, filtering, and logic implementation across multiple tables. The tasks reflect real-world data analysis challenges, including customer segmentation, transaction behavior, account activity monitoring, and lifetime value estimation.
 
-## Question Explanations
+---
+
+## Assessment Questions & Solutions
 
 ### 1. High-Value Customers with Multiple Products
 
-**Approach**:
-- Identified customers with both savings (`is_regular_savings = 1`) and investment plans (`is_a_fund = 1`)
-- Used conditional aggregation with `COUNT(DISTINCT CASE WHEN...)` to count each plan type separately
-- Calculated total deposits by summing `confirmed_amount` (converted from kobo)
-- Filtered for active, non-deleted plans with successful transactions
-- Key insight: The `LEFT JOIN` with transaction status check ensures we only count funded plans
+**Challenge**:  
+- Did not initially use conditional aggregation (`CASE WHEN`) correctly to count each plan type  
+- Miscounted the number of plans by counting transactions instead of distinct plan IDs  
+- Inconsistently applied kobo-to-currency conversion  
 
-**Challenges**:
-- Initially didn't use conditional aggregation 'CASE WHEN' to count each plan
-- Initially miscounted plans by not using `DISTINCT`, counting transactions instead
-- Resolved by properly counting distinct plan IDs for each type
-- Had to ensure kobo-to-currency conversion was applied consistently
+**Approach**:  
+- Used `COUNT(DISTINCT CASE WHEN...)` for accurate savings and investment plan counts  
+- Applied currency conversion consistently on `confirmed_amount`  
+- Filtered for non-deleted, active plans and successful transactions  
+- Used `LEFT JOIN` to ensure only funded plans were included in the count  
+
+---
 
 ### 2. Transaction Frequency Analysis
 
-**Approach**:
-- Created a CTE to calculate transaction counts and active months per customer
-- Limited analysis to the past 12 months for recency
-- Categorized customers into bands based on monthly transaction averages
-- Used `DATE_FORMAT` to group by month while preserving year
-- Key insight: The `GREATEST(active_months, 1)` prevents division by zero for new customers
+**Challenge**:  
+- Initially used subqueries instead of CTEs for transaction and activity month calculations  
+- Analyzed customer activity over their entire history instead of focusing on recent 12 months  
+- Overlooked edge cases where transactions occurred in the same month  
 
-**Challenges**:
-- Initially use Sub-query instead of CTE to calculate transaction counts and active months per customer
-- Originally calculated frequency over entire history rather than recent activity
-- Fixed by adding the 12-month filter and counting distinct active months
-- Had to handle edge cases where customers had transactions in the same month
+**Approach**:  
+- Created a CTE to calculate transaction counts and distinct active months  
+- Limited analysis to the past 12 months using date filtering  
+- Used `GREATEST(active_months, 1)` to avoid division by zero  
+- Grouped data using `DATE_FORMAT` for accurate monthly aggregation  
+- Categorized customers by transaction frequency band  
+
+---
 
 ### 3. Account Inactivity Alert
 
-**Approach**:
-- Identified active plans (`status_id = 1`, `is_deleted = 0`) with no recent transactions
-- Used `LEFT JOIN` with transaction status filter to find last activity date
-- Calculated inactivity period with `DATEDIFF`
-- Classified plan types using conditional logic
-- Key insight: The `HAVING` clause catches both truly inactive accounts and those with no transactions
+**Challenge**:  
+- Initially missed plans with zero transactions (i.e., NULL last transaction dates)  
+- Misunderstood business rules around active account criteria  
 
-**Challenges**:
-- Initially missed including plans with zero transactions (NULL dates)
-- Solved by adding the `last_transaction_date IS NULL` condition
-- Had to verify the business definition of "active" accounts
+**Approach**:  
+- Selected only plans marked as active (`status_id = 1`) and not deleted  
+- Used `LEFT JOIN` to identify last transaction date per plan  
+- Calculated inactivity period using `DATEDIFF`  
+- Included logic to catch both dormant accounts and those with no activity using `HAVING`  
+- Categorized plan types with conditional logic  
+
+---
 
 ### 4. Customer Lifetime Value (CLV) Estimation
 
-**Approach**:
-- Calculated account tenure using `TIMESTAMPDIFF` in months
-- Counted successful transactions with positive amounts
-- Implemented the CLV formula: `(transactions/tenure) * 12 * (0.1% of total value)`
-- Added safeguards against division by zero with `GREATEST`
-- Key insight: The `COALESCE` ensures NULL transaction sums default to zero
+**Challenge**:  
+- Faced syntax issues using MySQL date functions like `TIMESTAMPDIFF`  
+- Initially forgot to convert amounts from kobo to currency in revenue calculations  
+- Risked division-by-zero errors in tenure-based calculations  
 
-**Challenges**:
-- Initially had issues with MySQL date functions syntax
-- Verified proper usage of `TIMESTAMPDIFF` through MySQL documentation
-- Had to carefully handle the kobo-to-currency conversion in the profit calculation
+**Approach**:  
+- Used `TIMESTAMPDIFF` to compute customer tenure in months  
+- Calculated CLV using the formula: `(transactions/tenure) * 12 * (0.1% of total value)`  
+- Handled NULLs using `COALESCE`, and used `GREATEST` to safeguard against division by zero  
+- Ensured all monetary values were converted from kobo to standard currency  
+
+---
 
 ## Technical Considerations
 
-1. **Performance Optimizations**:
-   - Added appropriate JOIN conditions LIKE INNER JOIN and LEFT JOIN in the ON clause rather than WHERE
-   - Used indexing-friendly filtering (e.g., on `transaction_status`)
-   - Limited date ranges where applicable
+- **Performance Optimization**: Used `INNER JOIN` and `LEFT JOIN` appropriately within `ON` clauses, applied date range filters, and ensured indexing compatibility by filtering on `transaction_status`  
+- **Data Quality Assurance**: Used `COALESCE` to handle missing values, protected formulas from division-by-zero errors, and verified the definition of business terms like â€œactive accountâ€  
 
-2. **Data Quality**:
-   - Handled NULL values with `COALESCE`
-   - Protected against division by zero
-   - Verified business rules for active/inactive statuses
+---
 
+## Summary
+This assessment demonstrates my practical skills in using SQL to solve complex business problems. I showed the ability to:
+
+- Correctly analyze customer behaviors and plan usage
+- Segment and categorize user activity over time
+- Identify dormant accounts with precision
+- Estimate customer value using tenure and revenue patterns
+
+Throughout, I emphasized accurate logic, performance-conscious querying, and robustness in handling real-world data irregularities.
